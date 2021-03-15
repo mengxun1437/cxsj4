@@ -3,3 +3,5 @@
 /target
 
 /src/main/resources/application.yml
+
+/src/main/java/online/mengxun/server/config/GlobalDataConfig.java
