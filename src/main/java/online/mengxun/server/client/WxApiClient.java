@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface WxApiClient {
     @RequestMapping(
             method = RequestMethod.GET,
-            value = "/sns/jscode2session?appid={appId}&secret={appSecretKey}&js_code={jsCode}&grant_type=authorization_code"
+            value = "/sns/jscode2session?appid={appId}&secret={appSecretKey}&js_code={jsCode}&grant_type=authorization_code&connect_redirect=1"
     )
     String getOpenIdByCode(@PathVariable("appId") String appId,
-                           @PathVariable("appSecretKey") String appSecretKey,
-                           @PathVariable("jsCode") String jsCode);
+                         @PathVariable("appSecretKey") String appSecretKey,
+                         @PathVariable("jsCode") String jsCode);
 }

@@ -10,7 +10,6 @@ import java.util.Date;
 @Entity
 public class User {
     @Id
-    private String id;
     private String openId;
     private String nickName;
     private String avatar;

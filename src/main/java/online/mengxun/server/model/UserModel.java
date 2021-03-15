@@ -13,7 +13,6 @@ public class UserModel {
 
     @Data
     public static class RegisterUser{
-
         @NotBlank(message = "昵称不可以为空")
         private String nickName;
 

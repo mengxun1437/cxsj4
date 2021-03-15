@@ -3,6 +3,7 @@ package online.mengxun.server.exception;
 import online.mengxun.server.response.Response;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,9 +21,16 @@ public class GlobalException {
         System.out.println(ex);
         try {
             /*
+            请求方式不允许
+            * */
+            if (ex instanceof HttpRequestMethodNotSupportedException){
+                return Response.error("该接口不支持此请求方式");
+            }
+
+            /*
             * 空指针错误
             * */
-            if (ex instanceof NullPointerException){
+            else if (ex instanceof NullPointerException){
                 return Response.error("发生了空指针错误");
             }
 

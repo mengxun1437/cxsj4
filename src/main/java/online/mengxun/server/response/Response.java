@@ -76,6 +76,14 @@ public class Response  implements Serializable {
         return  response;
     }
 
+    public static Response error(String msg,Object data){
+        Response response=new Response();
+        response.code=40000;
+        response.msg=msg;
+        response.data=data;
+        return  response;
+    }
+
     public static Response error(){
         Response response=new Response();
         response.code=40000;
