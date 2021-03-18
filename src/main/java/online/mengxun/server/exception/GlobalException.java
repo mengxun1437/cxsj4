@@ -51,11 +51,11 @@ public class GlobalException {
                 return Response.error("数据库更新失败");
             }
 
-            return Response.error("发生了异常情况");
+            return Response.error(ex.getMessage());
 
         } catch (Exception e) {
             e.printStackTrace();
-            return Response.error("服务器内部错误");
+            return Response.error(e.getMessage());
         }
     }
 }

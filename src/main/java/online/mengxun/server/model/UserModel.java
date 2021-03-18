@@ -12,7 +12,7 @@ public class UserModel {
     * */
 
     @Data
-    public static class RegisterUser{
+    public static class RegisterUser {
         @NotBlank(message = "昵称不可以为空")
         private String nickName;
 
@@ -22,7 +22,5 @@ public class UserModel {
         @URL(message = "头像链接存在问题")
         @NotBlank(message = "头像不可以为空")
         private String avatar;
-
-
     }
 }

@@ -10,6 +10,7 @@ import online.mengxun.server.entity.User;
 import online.mengxun.server.model.UserModel;
 import online.mengxun.server.reposity.UserRepository;
 import online.mengxun.server.response.Response;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ import static online.mengxun.server.util.BaseUtil.JSONStringToJSONObject;
 @RestController
 @RequestMapping("/user")
 @Validated
-public class UserController{
+public class UserController {
 
     @Autowired
     private UserRepository userRepository;
@@ -31,24 +32,24 @@ public class UserController{
     private WxApiClient wxApiClient;
 
     private String appId = GlobalDataConfig.appId;
-    private String appSecretKey =GlobalDataConfig.appSecretKey;
+    private String appSecretKey = GlobalDataConfig.appSecretKey;
 
     @ApiOperation(value = "获取OpenId")
     @GetMapping("/openId")
-    public Response getUserOpenid(@RequestParam("code") String code){
-        try{
-            JSONObject res = JSONStringToJSONObject(wxApiClient.getOpenIdByCode(appId,appSecretKey,code));
+    public Response getUserOpenid(@RequestParam("code") String code) {
+        try {
+            JSONObject res = JSONStringToJSONObject(wxApiClient.getOpenIdByCode(appId, appSecretKey, code));
             /*
             如果返回openid就返回成功
             * */
-            if(res.containsKey("openid")) {
+            if (res.containsKey("openid")) {
                 JSONObject resSuc = new JSONObject();
-                resSuc.put("openId",res.getString("openid"));
+                resSuc.put("openId", res.getString("openid"));
                 return Response.success("获取用户OpenId成功", resSuc);
-            }else {
-                return Response.error("获取用户OpenId失败",res);
+            } else {
+                return Response.error("获取用户OpenId失败", res);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return Response.error("获取OpenId发生异常");
         }
@@ -58,29 +59,39 @@ public class UserController{
     @PostMapping("/")
     public Response registerUser(@Valid @RequestBody UserModel.RegisterUser registerUser) {
         /*
-        * 用户存在返回存在
-        * */
-        if(userRepository.existsById(registerUser.getOpenId())){
+         * 用户存在返回存在
+         * */
+        if (userRepository.existsById(registerUser.getOpenId())) {
             return Response.error("该用户已经存在");
         }
         User user = new User();
-        user.setNickName(registerUser.getNickName());
-        user.setOpenId(registerUser.getOpenId());
-        user.setAvatar(registerUser.getAvatar());
+        BeanUtils.copyProperties(registerUser, user);
         user.setCreated(new Date());
         user.setUpdated(user.getCreated());
-        if (userRepository.save(user) != null){
+        if (userRepository.save(user) != null) {
             JSONObject resSuc = new JSONObject();
-            resSuc.put("openid",registerUser.getOpenId());
-            resSuc.put("created",user.getCreated());
-            resSuc.put("updated",user.getUpdated());
-            return Response.success("新增用户成功",resSuc);
-        }else {
+            resSuc.put("openId", registerUser.getOpenId());
+            resSuc.put("created", user.getCreated());
+            resSuc.put("updated", user.getUpdated());
+            return Response.success("新增用户成功", resSuc);
+        } else {
             return Response.error("新增用户失败");
         }
     }
 
 
-
-
+    @ApiOperation(value = "获取用户信息")
+    @GetMapping("/{openid}")
+    public Response getUserInfo(@PathVariable("openid") String openid) {
+        try {
+            if (!userRepository.existsById(openid)) {
+                return Response.error("该用户不存在");
+            } else {
+                return Response.success(userRepository.findById(openid));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Response.error("获取用户信息失败");
+        }
+    }
 }
