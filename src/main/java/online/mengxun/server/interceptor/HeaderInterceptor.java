@@ -1,4 +1,4 @@
-package online.mengxun.interceptor;
+package online.mengxun.server.interceptor;
 
 import lombok.extern.slf4j.Slf4j;
 import online.mengxun.server.reposity.UserRepository;

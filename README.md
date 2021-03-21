@@ -56,9 +56,7 @@
 
 **提交参数**
 
-| 参数 | 类型   | 必要性 | 说明                     |
-| ---- | ------ | ------ | ------------------------ |
-| code | String | 是     | 通过wx.login()获取的code |
+无
 
 **返回参数**
 
@@ -139,9 +137,7 @@
 
 **提交参数**
 
-| 参数   | 类型   | 必要性 | 说明                   |
-| ------ | ------ | ------ | ---------------------- |
-| openId | String | 是     | 通过code获取到的openId |
+无
 
 **返回参数**
 
@@ -194,11 +190,13 @@
   "code": 0,
   "msg": "success",
   "data": [
+      ...
       {
       "driverId": '${驱动id}',
       "driverName": '${驱动name,example:com.mysql.jdbc.Driver}',
       "driverType": '${驱动类型,example:mysql}'
     }
+      ...
   ]
 }
 ```
@@ -219,7 +217,7 @@
 
 **接口**
 
-​	**POST	baseURL + '/database/'**
+​	***POST	baseURL + '/database/'***
 
 **提交参数**
 
@@ -260,4 +258,221 @@
   "data": null
 }
 ```
+
+
+
+##### 2.3 获取用户所有的数据库
+
+**接口**
+
+​	***GET	baseURL + '/database/'***
+
+**提交参数**
+
+无
+
+**返回参数**
+
+code `0`
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data": [
+      ...
+      {
+      "dbId":'${数据库id}',
+      "shortName":'${数据库的简名}',
+      "created":'${创建日期}',
+      "updated":'${修改日期}'
+  	  }
+      ...
+      ]
+}
+```
+
+​	code	`40000`
+
+```json
+{
+  "code": 40000,
+  "msg": '${错误信息}',
+  "data": null
+}
+```
+
+
+
+##### 2.4 通过dbId获取数据库配置的具体信息
+
+**接口**
+
+​	***GET	baseURL + '/database/{dbId}'***
+
+**提交参数**
+
+无
+
+**返回参数**
+
+code `0`
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data":{
+      "dbId": '${数据库Id}',
+      "openId": '${用户openId}',
+      "shortName": '${数据库简名}',
+      "dbName": '${数据库名}',
+      "dbUser": '${数据库用户名}',
+      "dbIp": '${数据库主机Ip}',
+      "dbPort": '${数据库端口}',
+      "dbDriverId": '${数据库驱动Id}',
+       "created":'${创建日期}',
+      "updated":'${修改日期}'
+  }
+}
+```
+
+​	code	`40000`
+
+```json
+{
+  "code": 40000,
+  "msg": '${错误信息}',
+  "data": null
+}
+```
+
+
+
+##### 2.5 通过dbId修改数据库配置信息
+
+**接口**
+
+​	***PUT	baseURL + '/database/{dbId}'***
+
+**提交参数**
+
+| 参数       | 类型   | 必要性 | 说明                 |
+| ---------- | ------ | ------ | -------------------- |
+| dbIp       | String | 是     | 数据库所在主机的ip   |
+| dbName     | String | 是     | 需要连接的数据库名称 |
+| dbPort     | Number | 是     | 数据库的端口号       |
+| dbUser     | String | 是     | 数据库用户名         |
+| dbDriverId | String | 是     | 数据库密码           |
+| shortName  | String | 是     | 前端向用户展示的短名 |
+
+**返回参数**
+
+code `0`
+
+```json
+{
+  "code": 0,
+  "msg": "success",
+  "data":{
+      "dbId": '${数据库Id}',
+      "openId": '${用户openId}',
+      "shortName": '${数据库简名}',
+      "dbName": '${数据库名}',
+      "dbUser": '${数据库用户名}',
+      "dbIp": '${数据库主机Ip}',
+      "dbPort": '${数据库端口}',
+      "dbDriverId": '${数据库驱动Id}',
+      "created":'${创建日期}',
+      "updated":'${修改日期}'
+  }
+}
+```
+
+​	code	`40000`
+
+```json
+{
+  "code": 40000,
+  "msg": '${错误信息}',
+  "data": null
+}
+```
+
+
+
+##### 2.6 修改数据库配置信息的密码
+
+**接口**
+
+​	***PUT	baseURL + '/database/password'***
+
+**提交参数**
+
+| 参数  | 类型   | 必要性 | 说明         |
+| ----- | ------ | ------ | ------------ |
+| dbId  | String | 是     | 数据库Id     |
+| dbPwd | String | 是     | 修改后的密码 |
+
+**返回参数**
+
+code `0`
+
+```json
+{
+  "code": 0,
+  "msg": "修改数据库配置密码成功",
+  "data":null
+}
+```
+
+​	code	`40000`
+
+```json
+{
+  "code": 40000,
+  "msg": '${错误信息}',
+  "data": null
+}
+```
+
+
+
+##### 2.7 通过dbId删除数据库配置信息
+
+**接口**
+
+​	***DELETE	baseURL + '/database/{dbId}'***
+
+**提交参数**
+
+无
+
+**返回参数**
+
+code `0`
+
+```json
+{
+  "code": 0,
+  "msg": "删除数据库配置信息成功",
+  "data":null
+}
+```
+
+​	code	`40000`
+
+```json
+{
+  "code": 40000,
+  "msg": '${错误信息}',
+  "data": null
+}
+```
+
+
+
+
+
+
 

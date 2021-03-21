@@ -1,5 +1,7 @@
 package online.mengxun.server.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -8,6 +10,7 @@ import java.util.Date;
 
 @Data
 @Entity
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class DbConfig {
     @Id
     private String dbId;
@@ -15,6 +18,7 @@ public class DbConfig {
     private String shortName;
     private String dbName;
     private String dbUser;
+    @JsonIgnore
     private String dbPwd;
     private String dbIp;
     private Integer dbPort;
