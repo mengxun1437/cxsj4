@@ -23,7 +23,7 @@ public class DatabaseClient {
                     break;
                 case "oracle":
                     Class.forName(dbDriver);
-                    con = DriverManager.getConnection("jdbc:"+dbType+":thin:@"+dbIp+":"+dbPort+":"+dbName,dbUser,dbPwd);
+                    con = DriverManager.getConnection("jdbc:"+dbType+":thin:@"+dbIp+":"+dbPort+"/"+dbName,dbUser,dbPwd);
                     break;
                 default:
                     break;
