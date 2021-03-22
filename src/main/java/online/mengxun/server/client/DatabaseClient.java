@@ -11,9 +11,23 @@ public class DatabaseClient {
     public static Connection getConnection(String dbIp,String dbPort,String dbName,String dbUser,String dbPwd,String dbDriver,String dbType) {
         Connection con = null; // 声明连接
         try {
-            Class.forName(dbDriver);
-            // 声明驱动
-            con = DriverManager.getConnection("jdbc:"+dbType+"://"+dbIp+":"+dbPort+"/"+dbName, dbUser, dbPwd);
+            switch(dbType){
+                case "mysql":
+                case "postgresql":
+                    Class.forName(dbDriver);
+                    con = DriverManager.getConnection("jdbc:"+dbType+"://"+dbIp+":"+dbPort+"/"+dbName, dbUser, dbPwd);
+                    break;
+                case "sqlserver":
+                    Class.forName(dbDriver);
+                    con = DriverManager.getConnection("jdbc:"+dbType+"://"+dbIp+":"+dbPort+";DatabaseName="+dbName,dbUser,dbPwd);
+                    break;
+                case "oracle":
+                    Class.forName(dbDriver);
+                    con = DriverManager.getConnection("jdbc:"+dbType+":thin:@"+dbIp+":"+dbPort+":"+dbName,dbUser,dbPwd);
+                    break;
+                default:
+                    break;
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

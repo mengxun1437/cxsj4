@@ -1,5 +1,6 @@
 package online.mengxun.server.controller;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import online.mengxun.server.client.DatabaseClient;
 import online.mengxun.server.entity.DbConfig;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Api(tags = "数据库查询模块")
 @RestController
 @RequestMapping("/select")
 public class DbSelectController {
@@ -46,6 +48,11 @@ public class DbSelectController {
 
            if (!dbConfigRepository.existsByDbIdAndOpenId(dbId,openId)){
                return Response.error("您没有获取数据库的配置信息的权限");
+           }
+
+           //数据库语句校验,只能查询
+           if(!select.getSrSql().substring(0,6).equalsIgnoreCase("SELECT")){
+               return Response.error("只能提交select语句");
            }
 
            DbConfig dbConfig = dbConfigRepository.getOne(dbId);
