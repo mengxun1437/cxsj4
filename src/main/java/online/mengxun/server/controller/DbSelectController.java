@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -36,56 +37,69 @@ public class DbSelectController {
 
     @ApiOperation(value = "获取查询结果")
     @PostMapping("/")
-    public Response getSelectResult(@RequestHeader("Authorization") String openId, @Valid @RequestBody DbSelectModel.GetSelectResult select){
-       try{
-           String dbId = select.getDbId();
-           String srSql = select.getSrSql();
+    public Response getSelectResult(@RequestHeader("Authorization") String openId, @Valid @RequestBody DbSelectModel.GetSelectResult select) {
+        try {
+            String dbId = select.getDbId();
+            String srSql = select.getSrSql();
 
-           //数据库id校验
-           if (!dbConfigRepository.existsById(dbId)) {
-               return Response.error("该数据库配置不存在");
-           }
+            //数据库id校验
+            if (!dbConfigRepository.existsById(dbId)) {
+                return Response.error("该数据库配置不存在");
+            }
 
-           if (!dbConfigRepository.existsByDbIdAndOpenId(dbId,openId)){
-               return Response.error("您没有获取数据库的配置信息的权限");
-           }
+            if (!dbConfigRepository.existsByDbIdAndOpenId(dbId, openId)) {
+                return Response.error("您没有获取数据库的配置信息的权限");
+            }
 
-           //数据库语句校验,只能查询
-           if(!select.getSrSql().substring(0,6).equalsIgnoreCase("SELECT")){
-               return Response.error("只能提交select语句");
-           }
+            //数据库语句校验,只能查询
+            if (!select.getSrSql().substring(0, 6).equalsIgnoreCase("SELECT")) {
+                return Response.error("只能提交select语句");
+            }
 
-           DbConfig dbConfig = dbConfigRepository.getOne(dbId);
-           DbDriver dbDriver = dbDriverRepository.getOne(dbConfig.getDbDriverId());
+            if(!srSql.matches("select (.*) from (.*)")){
+                return Response.error("sql语句格式错误;正确格式=>select () from ()");
+            }
 
-           DbSearchRecord dbSearchRecord = new DbSearchRecord();
-           Connection conn = DatabaseClient.getConnection(dbConfig.getDbIp(),dbConfig.getDbPort().toString(),dbConfig.getDbName(),dbConfig.getDbUser(),dbConfig.getDbPwd(),dbDriver.getDriverName(),dbDriver.getDriverType());
-           if (conn == null){
-               dbSearchRecord.setSrId(UUID.randomUUID().toString());
-               dbSearchRecord.setSrConnected(false);
-               dbSearchRecord.setOpenId(openId);
-               dbSearchRecord.setSrSql(srSql);
-               dbSearchRecord.setCreated(new Date());
-               dbSearchRecord.setSrResult(false);
-               dbSearchRecordRepository.save(dbSearchRecord);
-               return Response.error("数据库连接失败");
-           }
+            DbConfig dbConfig = dbConfigRepository.getOne(dbId);
+            DbDriver dbDriver = dbDriverRepository.getOne(dbConfig.getDbDriverId());
 
-           List selectResultData = DatabaseClient.selectData(conn,srSql);
-           System.out.println(selectResultData);
-           dbSearchRecord.setSrId(UUID.randomUUID().toString());
-           dbSearchRecord.setSrConnected(true);
-           dbSearchRecord.setOpenId(openId);
-           dbSearchRecord.setSrSql(srSql);
-           dbSearchRecord.setCreated(new Date());
-           dbSearchRecord.setSrResult(true);
-           dbSearchRecordRepository.save(dbSearchRecord);
-           return Response.success("查询成功",selectResultData);
+            DbSearchRecord dbSearchRecord = new DbSearchRecord();
+            Connection conn = DatabaseClient.getConnection(dbConfig.getDbIp(), dbConfig.getDbPort().toString(), dbConfig.getDbName(), dbConfig.getDbUser(), dbConfig.getDbPwd(), dbDriver.getDriverName(), dbDriver.getDriverType());
+            if (conn == null) {
+                dbSearchRecord.setSrId(UUID.randomUUID().toString());
+                dbSearchRecord.setSrConnected(false);
+                dbSearchRecord.setOpenId(openId);
+                dbSearchRecord.setSrSql(srSql);
+                dbSearchRecord.setCreated(new Date());
+                dbSearchRecord.setSrResult(false);
+                dbSearchRecordRepository.save(dbSearchRecord);
+                return Response.error("数据库连接失败");
+            }
 
-       }catch (Exception e){
-           e.printStackTrace();
-           return Response.error("查询失败");
-       }
+            dbSearchRecord.setSrId(UUID.randomUUID().toString());
+            dbSearchRecord.setSrConnected(true);
+            dbSearchRecord.setOpenId(openId);
+            dbSearchRecord.setSrSql(srSql);
+            dbSearchRecord.setCreated(new Date());
+
+
+            try{
+                List selectResultData = DatabaseClient.selectData(conn, srSql);
+
+                dbSearchRecord.setSrResult(true);
+                dbSearchRecordRepository.save(dbSearchRecord);
+                return Response.success("查询成功", selectResultData);
+            }catch (SQLException e) {
+                dbSearchRecord.setSrResult(false);
+                dbSearchRecordRepository.save(dbSearchRecord);
+                return Response.error(e.getMessage());
+            }
+
+
+
+        } catch (Exception e) {
+
+            return Response.error("Unknown Select Error");
+        }
     }
-
 }

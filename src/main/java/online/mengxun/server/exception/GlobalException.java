@@ -50,7 +50,6 @@ public class GlobalException {
             else if (ex instanceof DataIntegrityViolationException) {
                 return Response.error("数据库更新失败");
             }
-
             return Response.error(ex.getMessage());
 
         } catch (Exception e) {
