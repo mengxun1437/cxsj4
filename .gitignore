@@ -1,7 +1,11 @@
 /.idea
 
-/target
-
 /src/main/resources/application.yml
 
 /src/main/java/online/mengxun/server/config/GlobalDataConfig.java
+
+/target/classes
+/target/generated-sources
+/target/maven-status
+/target/maven-archiver
+/target/cxsj4-1.0-SNAPSHOT.jar.original
