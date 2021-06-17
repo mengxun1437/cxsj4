@@ -4,7 +4,7 @@
 
 ### 使用技术
 
-1. SpringBoot、Mysql
+1. SpringBoot、Mysql、Kafka
 2. 主要整合框架   JPA、SwaggerUI、OpenFeign
 
 
